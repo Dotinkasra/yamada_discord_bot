@@ -3,11 +3,22 @@ from discord import app_commands
 import discord
 
 class PostForum(commands.Cog):
+    """
+    PostForumクラスは、discordのサーバーにおいて、特定のフォーラムに投稿するCogです
+
+    Parameters
+    ----------
+    commands : commands.Bot
+        Botのインスタンス
+    """
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
+        """
+        botが起動した時に実行され、Cogの読み込みが完了したことを示すメッセージを出力します。
+        """
         print('Successfully loaded : PostForum')
 
     @app_commands.command(name = "postforum", description = "*管理者限定 forumに投稿")
@@ -34,6 +45,24 @@ class PostForum(commands.Cog):
         select_tags: app_commands.Choice[str],
         file_name: str = None,
     ) -> None:
+        """
+        フォーラム投稿用のメソッド
+
+        Parameters
+        ----------
+        interaction : discord.Interaction
+            受け取ったInteraction
+        title : str
+            フォーラムのタイトル
+        msg : str
+            フォーラムの本文
+        select_forum : app_commands.Choice[str]
+            投稿先
+        select_tags : app_commands.Choice[str]
+            投稿するフォーラムに付与するタグ
+        file_name : str, optional
+            ファイルが有る場合は、ファイル名を指定する default: None
+        """
         channel = interaction.guild.get_channel(int(select_forum.value))
         
         tag = None

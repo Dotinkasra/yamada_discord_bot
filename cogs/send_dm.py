@@ -3,6 +3,14 @@ from discord import app_commands
 import discord
 
 class SendDM(commands.Cog):
+    """
+    BANした後にDMを送るコマンド
+
+    Parameters
+    ----------
+    commands : commands.Bot
+        Botのインスタンス
+    """
     def __init__(self, bot: commands.Cog):
         self.bot = bot
 
@@ -19,6 +27,18 @@ class SendDM(commands.Cog):
         member: discord.Member = None,
         user_id: str = None,
     ) -> None:
+        """
+        BANし、DMを送信するメソッド
+
+        Parameters
+        ----------
+        interaction : discord.Interaction
+            受け取ったinteraction
+        member : discord.Member
+            BAN対象のメンバー
+        user_id : str
+            BAN対象のユーザーID, memberかuser_idのどちらかを指定しなければならない
+        """
         if member is None and user_id is None:
             return
         if member is None and user_id is not None:

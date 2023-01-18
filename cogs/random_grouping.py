@@ -7,6 +7,11 @@ import asyncio
 class randomGrouping(commands.Cog):
     """
     discordのサーバーにおいて、グループ分けを行うCogです。
+    
+    Parameters
+    ----------
+    commands : commands.Bot
+        Botのインスタンス
     """
     def __init__(self, bot: commands.Cog):
         self.bot = bot
