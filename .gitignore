@@ -1,0 +1,7 @@
+__pycache__
+*.csv
+*.json
+venv
+*.html
+.DS_Store
+*.ini
