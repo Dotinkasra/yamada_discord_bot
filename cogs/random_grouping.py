@@ -28,8 +28,13 @@ class randomGrouping(commands.Cog):
     ) -> None:
         """
         グループ分けを行うコマンドです。
-        :param interaction: discordのInteractionオブジェクト。
-        :param num_of_groups: グループ数。
+
+        Parameters
+        ----------
+        interaction: discord.Interaction
+            discordのInteractionオブジェクト。
+        num_of_groups: int, optional
+            グループ数。デフォルトは2
         """
         start_msg = await interaction.channel.send("10秒間の投票を行います。")
         
@@ -70,9 +75,18 @@ class randomGrouping(commands.Cog):
     def do_random_grouping(self, members: list, number_of_groups: int) -> list:
         """
         グループ分けを行う関数です。
-        :param members: グループ分けを行うメンバーのリスト。
-        :param number_of_groups: グループ数。
-        :return: グループ分け後のリスト。
+
+        Parameters
+        ----------
+        members : list
+            グループ分けを行うメンバーのリスト。
+        number_of_groups : int
+            グループ数。
+        
+        Returns
+        -------
+        list
+            グループ分け後のリスト。
         """
         if number_of_groups == 0:
             return []
