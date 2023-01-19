@@ -7,7 +7,7 @@ import asyncio
 class randomGrouping(commands.Cog):
     """
     discordのサーバーにおいて、グループ分けを行うCogです。
-    
+
     Parameters
     ----------
     commands : commands.Bot
@@ -22,6 +22,26 @@ class randomGrouping(commands.Cog):
         botが起動した時に実行され、Cogの読み込みが完了したことを示すメッセージを出力します。
         """
         print('Successfully loaded : randomGrouping')
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
+        if not reaction.message.id == self.start_msg.id:
+            return
+        text = await self.get_reaction_members([reaction])
+        await self.results_msg.delete()
+        if text:
+            self.results_msg = await reaction.message.channel.send(embed= text)
+
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction: discord.Reaction, user: discord.User):
+        print(reaction.message.id, self.start_msg.id)
+        print(reaction)
+        if not reaction.message.id == self.start_msg.id:
+            return
+        text = await self.get_reaction_members([reaction])
+        await self.results_msg.delete()
+        if text:
+            self.results_msg = await reaction.message.channel.send(embed= text)
 
     @app_commands.command(name = "grouping", description = "グループ分けします")
     @app_commands.describe(num_of_groups= "グループの数")
@@ -41,17 +61,23 @@ class randomGrouping(commands.Cog):
         num_of_groups: int, optional
             グループ数。デフォルトは2
         """
-        start_msg = await interaction.channel.send("10秒間の投票を行います。")
-        
+        self.start_msg = await interaction.channel.send("10秒間の投票を行います。")
+        self.num_of_groups = num_of_groups
+
         #10秒間の投票を行う
-        await start_msg.add_reaction("✅")
+        await self.start_msg.add_reaction("✅")
         await asyncio.sleep(10)
 
         #リアクションが付き終わってから、もう一度メッセージを取得
-        reload_start_msg = await interaction.channel.fetch_message(start_msg.id)
+        reload_start_msg = await interaction.channel.fetch_message(self.start_msg.id)
+        text = await self.get_reaction_members(reload_start_msg.reactions)
+        if text:
+            #グループ分けの結果を送信
+            self.results_msg = await interaction.channel.send(embed=text)
 
+    async def get_reaction_members(self, reactions: list[discord.Reaction]) -> discord.Embed | None:
         all_reaction_members = []        
-        for reaction in reload_start_msg.reactions:
+        for reaction in reactions:
             #反応した人のリストを取得（botを除く）
             all_reaction_members.append([m async for m in reaction.users() if not m.bot])
             
@@ -62,20 +88,17 @@ class randomGrouping(commands.Cog):
         )
 
         #グループ分けをする
-        result_group = self.do_random_grouping(all_reaction_members, num_of_groups)
+        result_group = self.do_random_grouping(all_reaction_members, self.num_of_groups)
+        if len(result_group) == 0:
+            return None
+        
+        embed = discord.Embed(title="チーム分け結果", description="以下の通りです。", color=0x8f70ff)
 
-        text = ""
         for i, group in enumerate(result_group):
-            group_name = chr(ord("A") + i)
-            text += f"グループ{group_name}\n"
-            text += ", ".join([m.name for m in group])
-            if not i == len(result_group) - 1:
-                text += "\n\n"
-
-        #グループ分けの結果を送信
-        await interaction.channel.send(text)
-        #投票告知のメッセージを削除
-        await reload_start_msg.delete()
+            group_name = "チーム" + chr(ord("A") + i)
+            embed.add_field(name = group_name, value = ", ".join([m.name for m in group]), inline=False)
+            
+        return embed
     
     def do_random_grouping(self, members: list, number_of_groups: int) -> list:
         """
