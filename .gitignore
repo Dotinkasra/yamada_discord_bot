@@ -5,3 +5,4 @@ venv
 *.html
 .DS_Store
 *.ini
+*.yaml
