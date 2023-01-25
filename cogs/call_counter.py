@@ -58,6 +58,7 @@ class CallCounter(commands.Cog):
         """
         no_count_channel_ids: list[int] = [
             1058321624203530290,
+            1058042644586049547,
         ]
         channels = [channel for channel in self.guild.voice_channels if channel.id not in no_count_channel_ids]
         return sorted(channels, key=lambda x: len(x.members), reverse=True)
