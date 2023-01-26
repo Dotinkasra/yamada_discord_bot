@@ -8,6 +8,7 @@ INITIAL_EXTENSIONS = [
     'cogs.post_forum',
     'cogs.send_dm',
     'cogs.random_grouping',
+    'cogs.image_catcher',
     'cogs.name_changer',
 ]
 

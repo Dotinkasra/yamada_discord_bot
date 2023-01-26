@@ -6,4 +6,5 @@ venv
 .DS_Store
 *.ini
 *.yaml
+*.yaml
 tt.py
